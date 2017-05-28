@@ -26,7 +26,7 @@ def roll_mult(number, times, maxnum):
     # n : value counter
     n = 1
     for i in range(times):
-        n = (n * number ) % maxnum
+        n = (n * number) % maxnum
     return n
 
 
@@ -40,13 +40,10 @@ def EEA(b, n):
         b : e = public key
         n : phi (n) = Euler's totient function of the product of the two
                 primes
-
     Returns:
         b : gcd
         x0 : private key
         y0 : no significance for our purposes
-
-
     """
     x0, x1, y0, y1 = 1, 0, 0, 1
     while n != 0:
@@ -79,7 +76,10 @@ def get_priv_key(pub, maxnum):
         private key
     """
     phin = phi(maxnum)
-    priv = EEA(pub, phin)[1]
+    z, priv, a = EEA(pub, phin)
+    print(z, priv, a)
+    print("priv:", priv)
+    return priv
 
 
 def isPrime(n):
@@ -93,29 +93,71 @@ def isPrime(n):
     return True
 
 
-def encrypt(inp, out, min_prime=0, max_prime=100):
+def file_to_list(fyle):
+    """
+    Converts .txt to list of characters to encrypt
+
+    Args:
+        fyle : file to convert
+    Returns:
+        list
+    """
+    new_list = []
+    with open(fyle) as f:
+        while True:
+            c = f.read(1)
+            if not c:
+                print("end of file")
+                break
+            new_list.append(c)
+    return new_list
+
+
+def encrypt(inp, out, min_prime, max_prime):
     """
     Encrypts a piece of text using RSA method
 
     Args:
         inp : input text file
         out : output text file, where encrypted text will exist
+        min_prime : minimum prime number allowed
+        max_prime : maximum prime number allowed
 
     Returns: decryption key
     """
     # initialising primes
     cached_primes = [i for i in range(min_prime,max_prime) if isPrime(i)]
-    # n : choose random prime from list
-    n = random.choice(cached_primes)
+    # p,q : choose random prime from list
+    p = random.choice(cached_primes)
+    q = random.choice(cached_primes)
+    # This is the limit
+    N = p*q
+    phin = phi(N)
+    # public key
+    e = 3
 
     # obtain list of letters from text file
-    chars = []
+    og_characters = file_to_list(inp)
+    # og txt to nums
+    og_nums = []
+    for i in og_characters:
+        og_nums.append(ord(i))
+    print(og_nums)
+    # og nums to new nums
+    new_nums = []
+    for i in og_nums:
+        x = roll_mult(i, e, N)
+        new_nums.append(x)
+    # new nums to out file
+    thefile = open(out, 'w')
+    for item in new_nums:
+        thefile.write("%s\n" % item)
 
-    key = 4
-    return key
+    # find key
+    key = get_priv_key(e, N)
+    return key, N
 
-
-def decrypt(inp, out):
+def decrypt(inp, out, key, maxnum):
     """
     Decrypts a piece of input
 
@@ -123,3 +165,24 @@ def decrypt(inp, out):
         inp : input text file
         out : output text file, where decrypted text will exist
     """
+    # read encrypted file
+    with open (inp, "r") as ins:
+        array = []
+        for line in ins:
+            array.append(int(line[0:-1]))
+    # convert back to og nums using key
+    og_nums = []
+    for i in array:
+        print(i)
+        x = roll_mult(i, key, maxnum)
+        og_nums.append(x)
+    print(og_nums)
+    # convert og nums to og chars
+    og_chars = []
+    for i in og_nums:
+        x = chr(i)
+        og_chars.append(x)
+
+    thefile = open(out, 'w')
+    for item in og_chars:
+        thefile.write("%s" % item)

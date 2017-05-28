@@ -19,8 +19,6 @@ encrypt_file = "enc.txt"
 decrypt_file = "dyc.txt"
 
 # reads the input_file and encrypts it to the encrypt_file
-#crypto.encrypt(input_file, encrypt_file)
-
-
-j = crypto.phi(91)
-print(crypto.EEA(5, j))
+key, maxnum = crypto.encrypt(input_file, encrypt_file, min_prime=30, max_prime=200)
+# reads the encrypt_file and decrypts it to the decrypt file_to_list
+crypto.decrypt(encrypt_file, decrypt_file, key, maxnum)
