@@ -1,3 +1,4 @@
+print("Starting...")
 #
 # Author: Robert Costales
 # Date: 2017 05 26
@@ -6,7 +7,7 @@
 #           method.
 
 import crypto
-
+print("Importing crypto...")
 # REF
 # ord() converts character to corresponding ACII number
 # chr() converts number to character
@@ -19,6 +20,8 @@ encrypt_file = "enc.txt"
 decrypt_file = "dyc.txt"
 
 # reads the input_file and encrypts it to the encrypt_file
-key, maxnum = crypto.encrypt(input_file, encrypt_file, min_prime=30, max_prime=200)
+print("Starting Encryption")
+key, maxnum = crypto.encrypt(input_file, encrypt_file, min_prime=500, max_prime=1000)
 # reads the encrypt_file and decrypts it to the decrypt file_to_list
+print("Starting Decryption")
 crypto.decrypt(encrypt_file, decrypt_file, key, maxnum)

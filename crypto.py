@@ -31,6 +31,7 @@ def roll_mult(number, times, maxnum):
 
 
 def EEA(b, n):
+    # THIS FUNCTION DOES NOT WORK
     """
     Extended Euclidean Algorithm
     Note : phin -> phi(n)
@@ -64,7 +65,17 @@ def phi(n):
     return amount
 
 
+def try_priv_key(pub, maxnum):
+    phin = phi(maxnum)
+    count = 1
+    print("Working on finding private key...")
+    while (pub*count) % phin !=1:
+        count +=1
+    return count
+
+
 def get_priv_key(pub, maxnum):
+    # THIS FUNCTION DOES NOT WORK
     """
     Gets private key based on public key, and maxnum (N)
 
@@ -107,7 +118,6 @@ def file_to_list(fyle):
         while True:
             c = f.read(1)
             if not c:
-                print("end of file")
                 break
             new_list.append(c)
     return new_list
@@ -134,7 +144,7 @@ def encrypt(inp, out, min_prime, max_prime):
     N = p*q
     phin = phi(N)
     # public key
-    e = 3
+    e = 7
 
     # obtain list of letters from text file
     og_characters = file_to_list(inp)
@@ -142,7 +152,6 @@ def encrypt(inp, out, min_prime, max_prime):
     og_nums = []
     for i in og_characters:
         og_nums.append(ord(i))
-    print(og_nums)
     # og nums to new nums
     new_nums = []
     for i in og_nums:
@@ -154,7 +163,7 @@ def encrypt(inp, out, min_prime, max_prime):
         thefile.write("%s\n" % item)
 
     # find key
-    key = get_priv_key(e, N)
+    key = try_priv_key(e, N)
     return key, N
 
 def decrypt(inp, out, key, maxnum):
@@ -173,10 +182,8 @@ def decrypt(inp, out, key, maxnum):
     # convert back to og nums using key
     og_nums = []
     for i in array:
-        print(i)
         x = roll_mult(i, key, maxnum)
         og_nums.append(x)
-    print(og_nums)
     # convert og nums to og chars
     og_chars = []
     for i in og_nums:
